@@ -1,0 +1,624 @@
+// Generated Screen Components
+
+import { SmallAppBar, FilledButton, OutlineButton, Switch, Slider, ScrollView } from "@material";
+import { MetricCard, MetricData } from "../components/index.slint";
+import { StatusIndicator, StatusLevel } from "../components/index.slint";
+import { ValueStepper, ValueStepperCompact } from "../components/index.slint";
+import { AppData } from "data.slint";
+
+export component HomeScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+    callback start-clicked();
+    callback pause-clicked();
+    callback stop-clicked();
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Home";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            ScrollView {
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 24px;
+                    
+                    Text {
+                        text: "Overview";
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: #9E9E9E;
+                    }
+                    
+                    HorizontalLayout {
+                        spacing: 12px;
+                        
+                        MetricCard {
+                            data: {
+                                label: "Cycle Time",
+                                value: data.remaining-time,
+                                unit: "min",
+                                trend: "",
+                                trend-value: ""
+                            };
+                        }
+                        MetricCard {
+                            data: {
+                                label: "Load Weight",
+                                value: data.load-weight,
+                                unit: "lbs",
+                                trend: "",
+                                trend-value: ""
+                            };
+                        }
+                        MetricCard {
+                            data: {
+                                label: "Water Temp",
+                                value: data.water-temp,
+                                unit: "°F",
+                                trend: "",
+                                trend-value: ""
+                            };
+                        }
+                    }
+
+                    Text {
+                        text: "Status";
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: #9E9E9E;
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        border-radius: 12px;
+                        
+                        VerticalLayout {
+                            padding: 12px;
+                            spacing: 12px;
+                            
+                            HorizontalLayout {
+                                alignment: space-between;
+                                
+                                Text {
+                                    text: "Machine";
+                                    font-size: 14px;
+                                    color: #E0E0E0;
+                                }
+                                
+                                StatusIndicator {
+                                    level: StatusLevel.ok;
+                                    label: data.machine-status;
+                                }
+                            }
+                            HorizontalLayout {
+                                alignment: space-between;
+                                
+                                Text {
+                                    text: "Door";
+                                    font-size: 14px;
+                                    color: #E0E0E0;
+                                }
+                                
+                                StatusIndicator {
+                                    level: StatusLevel.ok;
+                                    label: data.door-status;
+                                }
+                            }
+                            HorizontalLayout {
+                                alignment: space-between;
+                                
+                                Text {
+                                    text: "Water";
+                                    font-size: 14px;
+                                    color: #E0E0E0;
+                                }
+                                
+                                StatusIndicator {
+                                    level: StatusLevel.ok;
+                                    label: data.water-level-status;
+                                }
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: 12px;
+                        
+                        FilledButton {
+                            text: "Start Cycle";
+                            clicked => { start-clicked(); }
+                        }
+                        OutlineButton {
+                            text: "Pause";
+                            clicked => { pause-clicked(); }
+                        }
+                        OutlineButton {
+                            text: "Stop";
+                            clicked => { stop-clicked(); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component ControlScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+    callback target-changed(float);
+    callback mode-changed(string);
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Cycle Control";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            VerticalLayout {
+                padding: 24px;
+                spacing: 32px;
+                alignment: center;
+                
+                VerticalLayout {
+                    spacing: 8px;
+                    alignment: center;
+                    
+                    Text {
+                        text: "Current Cycle";
+                        font-size: 14px;
+                        color: #9E9E9E;
+                        horizontal-alignment: center;
+                    }
+                    
+                    HorizontalLayout {
+                        alignment: center;
+                        spacing: 4px;
+                        
+                        Text {
+                            text: data.current-cycle;
+                            font-size: 64px;
+                            font-weight: 300;
+                            color: white;
+                        }
+                        
+                        Text {
+                            text: "";
+                            font-size: 24px;
+                            color: #9E9E9E;
+                            vertical-alignment: bottom;
+                        }
+                    }
+                }
+                
+                Rectangle {
+                    height: 1px;
+                    background: #424242;
+                }
+                
+                VerticalLayout {
+                    spacing: 16px;
+                    alignment: center;
+                    
+                    Text {
+                        text: "Select Cycle";
+                        font-size: 14px;
+                        color: #9E9E9E;
+                        horizontal-alignment: center;
+                    }
+                    
+                    ValueStepper {
+                        value <=> data.selected-cycle;
+                        min: 0;
+                        max: 8;
+                        step: 1;
+                        unit: "";
+                        
+                        changed(val) => { target-changed(val); }
+                    }
+                }
+
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 8px;
+                    
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "normal" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("normal"); }
+                        }
+                        
+                        Text {
+                            text: "Normal";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "delicate" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("delicate"); }
+                        }
+                        
+                        Text {
+                            text: "Delicate";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "heavy" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("heavy"); }
+                        }
+                        
+                        Text {
+                            text: "Heavy Duty";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "quick" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("quick"); }
+                        }
+                        
+                        Text {
+                            text: "Quick Wash";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "eco" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("eco"); }
+                        }
+                        
+                        Text {
+                            text: "Eco";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "bulky" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("bulky"); }
+                        }
+                        
+                        Text {
+                            text: "Bulky";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component SettingsScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Settings";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            ScrollView {
+                VerticalLayout {
+                    padding-top: 8px;
+                    padding-bottom: 24px;
+
+                    Rectangle {
+                        height: 48px;
+                        
+                        Text {
+                            x: 16px;
+                            text: "Wash Options";
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #3AA1F5;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        
+                        VerticalLayout {
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Water Temperature";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Spin Speed";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Extra Rinse";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Switch {
+                                        checked <=> data.extra-rinse;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: 48px;
+                        
+                        Text {
+                            x: 16px;
+                            text: "Smart Features";
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #3AA1F5;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        
+                        VerticalLayout {
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Auto Detergent";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Switch {
+                                        checked <=> data.auto-dispense;
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Delay Start";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    ValueStepperCompact {
+                                        value <=> data.delay-start;
+                                        min: 0;
+                                        max: 12;
+                                        step: 1;
+                                        unit: "hrs";
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: 48px;
+                        
+                        Text {
+                            x: 16px;
+                            text: "System";
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #3AA1F5;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        
+                        VerticalLayout {
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Maintenance";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Text {
+                                        text: "";
+                                        font-size: 14px;
+                                        color: #9E9E9E;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Diagnostics";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Text {
+                                        text: "";
+                                        font-size: 14px;
+                                        color: #9E9E9E;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Version";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Text {
+                                        text: data.version;
+                                        font-size: 14px;
+                                        color: #9E9E9E;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
